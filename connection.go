@@ -12,6 +12,9 @@ type Connection struct {
 }
 
 func (self *Connection) recv() {
+	defer self.ws.Close()
+	//defer self.room.leave <- pc
+
 	for {
 		_, msg, err := self.ws.ReadMessage()
 		if err != nil {
@@ -27,18 +30,17 @@ func (self *Connection) recv() {
 		// update all conn
 		//self.room.updateAll <- true
 	}
-
-	//self.room.leave <- pc
-	self.ws.Close()
 }
 
-func (self *Connection) send(msg []byte) {
+func (self *Connection) send(msg []byte) error {
 	err := self.ws.WriteMessage(websocket.TextMessage, msg)
 	if err != nil {
 		log.Error(err)
 		//self.room.leave <- pc
 		self.ws.Close()
+		return err
 	}
+	return nil
 }
 
 func newConnection(ws *websocket.Conn) Connection {

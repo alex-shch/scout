@@ -8,8 +8,6 @@ import (
 	"github.com/googollee/go-socket.io"
 )
 
-var connections []Connection = []Connection{}
-
 func main() {
 	log.Info("start")
 	defer log.Info("stop")

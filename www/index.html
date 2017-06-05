@@ -4,48 +4,51 @@
 		<meta charset="UTF-8">
 		<title></title>
 
-		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+		<script src="/js/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="></script>
+	    <script src="/js/socket.io-1.4.5.js"></script>
+	    <script src="/js/phaser.min-2.8.0.js"></script>
+
 		<script>
-			$( document ).ready(function() {
-				var conn;
+			$(document).ready(function() {
+				// --- logging -----------------------------------------------
 				var command = $("#command");
 				var logData = []
-				var log = $("#log");
+				var logView = $("#logView");
 
-				// var name = window.prompt("Your name");
-
-				// exchange
-				if (window["WebSocket"]) {
-					//conn = new WebSocket("ws://localhost:8080/ws?name=" + name);
-					conn = new WebSocket("ws://localhost:8080/ws");
-					conn.onopen = function() {
-					    console.log("Connected");
-					};
-					conn.onclose = function(evt) {
-					    console.log("Connection closed");
-					};
-					conn.onmessage = function(evt) {
-						if (logData.length == 10)
-							logData.shift()
-						logData.push(evt.data)
-
-					    //log.val(log.val() + '\n' + evt.data);
-						log.val(logData.join('\n'));
-				    }
-				} else {
-					window.alert("Sorry, your device does not supported");
+				log = function(msg) {
+					if (logData.length == 50) {
+						logData.shift()
+					}
+					logData.push(msg)
+					logView.val(logData.join('\n'));
 				}
 
-				$("#send_command").click(function(){
+				// --- socket.io ---------------------------------------------
+				var socket = io.connect(window.location.host, {path: "/ws/", transports: ['websocket']});
+				socket.on('tick', function(msg){
+			 		log("tick " + msg);
+				});
 
-					conn.send(command.val());
-					command.val("");
+				socket.on('playerAdded', function(msg){
+			 		console.log("player added, id: " + msg);
+				});
+
+				socket.on('playerRemoved', function(msg){
+			 		console.log("player removed, id: " + msg);
 				});
 
 
+				$("#sendCommandButton").click(function(){
+					log("send data")
+				});
 
-				// phaser
-				var game = new Phaser.Game(800, 600, Phaser.AUTO, 'gameView', { preload: preload, create: create, update: update });
+				// --- phaser ------------------------------------------------
+				var game = new Phaser.Game(
+					800, 600,
+					Phaser.AUTO,
+					'gameView',
+					{ preload: preload, create: create, update: update, render: render }
+				);
 
 				function preload() {
 					game.load.image('sky', 'assets/sky.png');
@@ -68,30 +71,34 @@
 
 				function doSomething(pointer) {
 					 // pointer will contain the pointer that activated this event
-					console.log('click')
+					console.log('move')
 					msg = {
-						name: 'click',
 						x: pointer.x,
 						y: pointer.y
 					}
-					conn.send(JSON.stringify(msg))
+					socket.emit("move", JSON.stringify(msg))
 				}
 
 				function update() {
 				}
 
+				function render() {
+					game.debug.cameraInfo(game.camera, 8, 16);
+				}
 			});
 		</script>
-
-		<script type="text/javascript" src="js/phaser.min.js"></script>
 	</head>
 	<body>
-		<div id="gameView"></div>
-		<input type="text" id="command" name="command" value="">
-		<button id="send_command">Send</button>
-		<br/>
-
-		<textarea id="log" rows="10" cols="50"></textarea>
-
+		<table>
+			<tr>
+				<td><div id="gameView"></div></td>
+				<td valign="top">
+					<input type="text" id="command" name="command" value="">
+					<button id="sendCommandButton">Send</button>
+					<br>
+					<textarea id="logView" rows="10" cols="50" style="height: 500px"></textarea>
+				</td>
+			</tr>
+		</table>
 	</body>
 </html>

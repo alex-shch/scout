@@ -49,10 +49,10 @@ func (self *Game) AddPlayer(so socketio.Socket) {
 		// TODO сделать безопасно (параллельный доступ!!!)
 		player := self.players[so]
 		delete(self.players, so)
-		so.BroadcastTo(_GAME_ROOM, "playerRemoved", player.Id)
+		so.BroadcastTo(_GAME_ROOM, "playerDisconnected", player.Id)
 	})
 
-	so.BroadcastTo(_GAME_ROOM, "playerAdded", player.Id)
+	so.BroadcastTo(_GAME_ROOM, "playerConnected", player.Id)
 }
 
 func (self *Game) Loop() {

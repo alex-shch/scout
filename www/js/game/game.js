@@ -17,6 +17,9 @@ class Game {
 	   );
 
 		this.player = null;
+		this.playerRoad = null;
+
+		this.points = new Set();
 	}
 
 	initNetwork() {
@@ -28,16 +31,21 @@ class Game {
 	}
 
 	preload() {
-	   this.pg.load.image('sky', 'assets/sky.png');
-	   this.pg.load.image('ground', 'assets/platform.png');
-	   this.pg.load.image('star', 'assets/star.png');
-	   this.pg.load.spritesheet('dude', 'assets/dude.png', 32, 48);
+	   //this.pg.load.image('sky', 'assets/sky.png');
+	   //this.pg.load.image('ground', 'assets/platform.png');
+		this.pg.load.image('star', 'assets/star.png');
+		this.pg.load.image('road', 'assets/road.png');
+		this.pg.load.image('car', 'assets/car60.png');
+	   //this.pg.load.spritesheet('dude', 'assets/dude.png', 32, 48);
 	}
 
 	create() {
-	   this.pg.add.sprite(0, 0, 'sky'); //  A simple background for our game
-		this.player = new Player(this.pg);
+	   //this.pg.add.sprite(0, 0, 'sky'); //  A simple background for our game
+
+		this.playerRoad = new Road(this.pg);
+
 		this.pg.input.onDown.add(this.onInputDown, this);
+		this.player = new Player(this.pg);
 
 		this.initNetwork()
 
@@ -46,6 +54,10 @@ class Game {
 
 	update() {
 		this.player.update();
+		this.playerRoad.update();
+		for (let p of this.points) {
+			p.update(); // TODO передать скорость дороги
+		}
 	}
 
 	render() {
@@ -60,6 +72,8 @@ class Game {
 		}
 		log('click to ' + JSON.stringify(msg))
 		this.socket.emit("move", JSON.stringify(msg))
+
+		this.addPoint(pointer.x, pointer.y);
 	}
 
 	onTick(msg) {
@@ -72,5 +86,14 @@ class Game {
 
 	onPlayerDisconnected(msg) {
 		log("disconnected player, id: " + msg);
+	}
+
+	addPoint(x, y) {
+		let p = new ClickPoint(this, x, y)
+		this.points.add(p);
+	}
+
+	delPoint(p) {
+		this.points.delete(p);
 	}
 }

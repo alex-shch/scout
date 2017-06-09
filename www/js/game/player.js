@@ -4,7 +4,7 @@ class Player {
 	constructor(phaserGame) {
 		this.vel = 10; // скорость
 		this.targetY = 100;
-		this.sprite = phaserGame.add.sprite(100, 450, 'car');
+		this.sprite = phaserGame.add.sprite(100, 100, 'car');
 		this.sprite.anchor.set(0.5);
 	}
 

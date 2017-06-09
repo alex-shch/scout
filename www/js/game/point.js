@@ -8,8 +8,8 @@ class ClickPoint {
    }
 
    update() {
-      this.sprite.y += 5;
-      if (this.sprite.y > 610) {
+      this.sprite.x -= 5;
+      if (this.sprite.x < -10) {
          this.game.delPoint(this);
          this.sprite.destroy();
       }

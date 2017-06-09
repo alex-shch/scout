@@ -31,6 +31,8 @@ class Game {
 	}
 
 	preload() {
+		this.pg.time.advancedTiming = true;
+
 	   //this.pg.load.image('sky', 'assets/sky.png');
 	   //this.pg.load.image('ground', 'assets/platform.png');
 		this.pg.load.image('star', 'assets/star.png');
@@ -65,6 +67,7 @@ class Game {
 
 	render() {
 	   this.pg.debug.cameraInfo(this.pg.camera, 8, 500);
+		this.pg.debug.text('fps: ' + (this.pg.time.fps || '--'), 700, 570, "#00ff00");
 	}
 
 	onInputDown(pointer) {

@@ -2,20 +2,20 @@
 
 class Player {
 	constructor(phaserGame) {
-		this.val = 10;
-		this.targetX = 100;
+		this.vel = 10; // скорость
+		this.targetY = 100;
 		this.sprite = phaserGame.add.sprite(100, 450, 'car');
 		this.sprite.anchor.set(0.5);
 	}
 
-	setTargetDirection(x) {
-		this.targetX = x;
+	setTargetDirection(y) {
+		this.targetY = y;
 	}
 
 	update() {
-		if (this.sprite.x != this.targetX) {
-			let d = this.targetX - this.sprite.x;
-			this.sprite.x += Math.sign(d) * Math.min(Math.abs(d), this.val);
+		if (this.sprite.y != this.targetY) {
+			let d = this.targetY - this.sprite.y;
+			this.sprite.y += Math.sign(d) * Math.min(Math.abs(d), this.vel);
 		}
 	}
 }

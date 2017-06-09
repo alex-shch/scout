@@ -53,8 +53,8 @@ class Game {
 	}
 
 	update() {
-		let x = Math.max(10, Math.min(370, this.pg.input.x));
-		this.player.setTargetDirection(x);
+		let y = Math.max(15, Math.min(365, this.pg.input.y));
+		this.player.setTargetDirection(y);
 
 		this.player.update();
 		this.playerRoad.update();
@@ -64,7 +64,7 @@ class Game {
 	}
 
 	render() {
-	   this.pg.debug.cameraInfo(this.pg.camera, 8, 16);
+	   this.pg.debug.cameraInfo(this.pg.camera, 8, 500);
 	}
 
 	onInputDown(pointer) {

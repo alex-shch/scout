@@ -53,6 +53,9 @@ class Game {
 	}
 
 	update() {
+		let x = Math.max(10, Math.min(370, this.pg.input.x));
+		this.player.setTargetDirection(x);
+
 		this.player.update();
 		this.playerRoad.update();
 		for (let p of this.points) {

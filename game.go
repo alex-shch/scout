@@ -16,6 +16,21 @@ type Game struct {
 	players map[socketio.Socket]Player
 }
 
+type PlayerInfo struct {
+	Id  string
+	Pos struct {
+		X int
+		Y int
+	}
+	//TargetY int
+	//Vel int
+}
+
+type TickInfo struct {
+	TickId  int64 // time?
+	Players []PlayerInfo
+}
+
 func NewGame(server *socketio.Server) *Game {
 	game := &Game{server: server, players: map[socketio.Socket]Player{}}
 
@@ -32,7 +47,12 @@ func NewGame(server *socketio.Server) *Game {
 }
 
 func (self *Game) AddPlayer(so socketio.Socket) {
-	player := Player{Id: fmt.Sprintf("%p", so)}
+	player := Player{
+		Id:      fmt.Sprintf("%p", so),
+		Vel:     Vec2{X: 5, Y: 0},
+		Pos:     Vec2{X: 100, Y: 100},
+		TargetY: 100,
+	}
 	self.players[so] = player
 
 	so.Join(_GAME_ROOM)
@@ -56,12 +76,14 @@ func (self *Game) AddPlayer(so socketio.Socket) {
 }
 
 func (self *Game) Loop() {
-	for {
-		msg := fmt.Sprintf("%v", time.Now())
+	ticker := time.NewTicker(time.Millisecond * 100)
+
+	for t := range ticker.C {
+		msg := fmt.Sprintf("%v", t)
 
 		//log.Debugf("tick %v", msg)
 		self.server.BroadcastTo(_GAME_ROOM, "tick", msg)
 
-		time.Sleep(300 * time.Millisecond)
+		//time.Sleep(300 * time.Millisecond)
 	}
 }

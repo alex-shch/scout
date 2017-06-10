@@ -32,6 +32,7 @@ class Game {
 
 	preload() {
 		this.pg.time.advancedTiming = true;
+		this.pg.time.desiredFps = 60;
 
 	   //this.pg.load.image('sky', 'assets/sky.png');
 	   //this.pg.load.image('ground', 'assets/platform.png');
